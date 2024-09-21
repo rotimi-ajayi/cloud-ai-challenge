@@ -1,0 +1,90 @@
+﻿@page "/"
+@using Azure;
+@using Azure.AI.Vision.ImageAnalysis;
+@using System;
+@using Azure.AI.OpenAI;
+@using OpenAI.Images;
+@using static System.Environment;
+
+@rendermode InteractiveServer
+
+<PageTitle>Home</PageTitle>
+
+<h1>Computer Vision</h1>
+
+<p>Insert URL or type prompt</p>
+
+<textarea @bind="urlOrPrompt" rows="5" cols="50" placeholder="Enter URL to analyze or prompt text to generate image"></textarea>
+<button @onclick="AnalyzeImage">Analyze Image</button>
+<button @onclick="GenerateImage">Generate Image</button>
+<img src="@imageUrl" alt="@caption" width="300" height="300"/>
+
+<p>@caption</p>
+
+@code
+{
+    string urlOrPrompt = "";
+    string caption = "";
+    string imageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Placeholder_view_vector.svg/991px-Placeholder_view_vector.svg.png";
+    void AnalyzeImage()
+    {
+       
+       string endpoint = Environment.GetEnvironmentVariable("VISION_ENDPOINT");
+        string key = Environment.GetEnvironmentVariable("VISION_KEY");
+
+
+        ImageAnalysisClient client = new ImageAnalysisClient(
+            new Uri(endpoint),
+            new AzureKeyCredential(key));
+
+        ImageAnalysisResult result = client.Analyze(
+            new Uri(urlOrPrompt),
+            VisualFeatures.Caption | VisualFeatures.Read,
+            new ImageAnalysisOptions { GenderNeutralCaption = true });
+
+        Console.WriteLine("Image analysis results:");
+        Console.WriteLine(" Caption:");
+        Console.WriteLine($"   '{result.Caption.Text}', Confidence {result.Caption.Confidence:F4}");
+        caption = result.Caption.Text;
+        imageUrl = urlOrPrompt;
+
+        Console.WriteLine(" Read:");
+        foreach (DetectedTextBlock block in result.Read.Blocks)
+            foreach (DetectedTextLine line in block.Lines)
+            {
+                Console.WriteLine($"   Line: '{line.Text}', Bounding Polygon: [{string.Join(" ", line.BoundingPolygon)}]");
+                foreach (DetectedTextWord word in line.Words)
+                {
+                    Console.WriteLine($"     Word: '{word.Text}', Confidence {word.Confidence.ToString("#.####")}, Bounding Polygon: [{string.Join(" ", word.BoundingPolygon)}]");
+                }
+            }
+
+    }
+
+    async void GenerateImage()
+    {
+       
+       string endpoint = Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT");
+        string key = Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY");
+
+        AzureOpenAIClient azureClient = new(
+            new Uri(endpoint),
+            new AzureKeyCredential(key));
+
+        // This must match the custom deployment name you chose for your model
+        ImageClient chatClient = azureClient.GetImageClient("model-dalle-3");
+
+        var imageGeneration = await chatClient.GenerateImageAsync(
+                urlOrPrompt,
+                new ImageGenerationOptions()
+                {
+                    Size = GeneratedImageSize.W1024xH1024
+                }
+            );
+
+        Uri imageUri = imageGeneration.Value.ImageUri;
+        imageUrl = imageUri.ToString();
+        StateHasChanged();
+        Console.WriteLine(imageGeneration.Value.ImageUri);
+    }
+}

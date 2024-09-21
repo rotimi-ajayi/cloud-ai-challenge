@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.002.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cloud-ai-challenge", "cloud-ai-challenge.csproj", "{4B5FEA5C-EDF0-48EB-9FF5-E7D6650110BC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4B5FEA5C-EDF0-48EB-9FF5-E7D6650110BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B5FEA5C-EDF0-48EB-9FF5-E7D6650110BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B5FEA5C-EDF0-48EB-9FF5-E7D6650110BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B5FEA5C-EDF0-48EB-9FF5-E7D6650110BC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {36CCF32F-4CA5-43D9-AFE5-47DB4BD0F80E}
+	EndGlobalSection
+EndGlobal
